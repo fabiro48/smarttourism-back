@@ -40,8 +40,8 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
   - Crear `GlobalExceptionHandler` en `common/exception/` con `@RestControllerAdvice` que mapee cada excepción a su código HTTP correspondiente y retorne `ErrorResponse`
   - _Requirements: 12.7_
 
-- [ ] 4. Implementar módulo de seguridad (JWT + Spring Security)
-  - [ ] 4.1 Implementar `JwtService` en `security/`
+- [x] 4. Implementar módulo de seguridad (JWT + Spring Security)
+  - [x] 4.1 Implementar `JwtService` en `security/`
     - Método `generateToken(UserDetails userDetails)`: genera JWT con subject=email, claim `role`, expiración configurable desde variable de entorno
     - Método `validateToken(String token, UserDetails userDetails)`: verifica firma, expiración y subject
     - Método `extractEmail(String token)`: extrae el subject del token
@@ -55,14 +55,14 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
     - **Property 4: Fallo de autenticación nunca retorna HTTP 200**
     - **Validates: Requirements 2.2, 2.3**
     - Generar credenciales inválidas arbitrarias y verificar que la respuesta nunca es 200
-  - [ ] 4.4 Implementar `JwtAuthenticationFilter` en `security/`
+  - [x] 4.4 Implementar `JwtAuthenticationFilter` en `security/`
     - Extender `OncePerRequestFilter`
     - Extraer token del header `Authorization: Bearer <token>`, validarlo con `JwtService`, cargar `UserDetails` y setear en `SecurityContextHolder`
     - _Requirements: 2.5_
-  - [ ] 4.5 Implementar `UserDetailsServiceImpl` en `security/`
+  - [x] 4.5 Implementar `UserDetailsServiceImpl` en `security/`
     - Cargar usuario por email desde `UserRepository`, lanzar `UsernameNotFoundException` si no existe
     - _Requirements: 2.4_
-  - [ ] 4.6 Configurar `SecurityFilterChain` en `security/SecurityConfig.java`
+  - [x] 4.6 Configurar `SecurityFilterChain` en `security/SecurityConfig.java`
     - Deshabilitar CSRF, configurar sesión stateless
     - Rutas públicas: `POST /api/v1/auth/**`, `GET /api/v1/experiences/**`, `GET /api/v1/reviews/**`, `GET /actuator/health`
     - Rutas TOURIST: `POST /api/v1/reservations`, `GET /api/v1/reservations/me`, `PATCH /api/v1/reservations/*/cancel`, `POST /api/v1/payments/**`, `POST /api/v1/reviews`
