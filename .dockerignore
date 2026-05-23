@@ -1,0 +1,7 @@
+.git
+.gitignore
+.kiro
+target/
+*.md
+Dockerfile
+.dockerignore

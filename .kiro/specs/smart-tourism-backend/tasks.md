@@ -6,7 +6,7 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
 
 ## Tasks
 
-- [ ] 1. Configurar estructura base del proyecto Spring Boot
+- [x] 1. Configurar estructura base del proyecto Spring Boot
   - Crear proyecto Maven con Spring Boot 3, Java 21 y las dependencias necesarias: `spring-boot-starter-web`, `spring-boot-starter-data-jpa`, `spring-boot-starter-security`, `spring-boot-starter-mail`, `spring-boot-starter-actuator`, `spring-boot-starter-validation`, `jjwt-api`, `jjwt-impl`, `jjwt-jackson`, `mapstruct`, `mapstruct-processor`, `flyway-core`, `postgresql`, `lombok`
   - Agregar dependencias de prueba: `jqwik 1.8.4`, `testcontainers-postgresql`, `spring-boot-starter-test`
   - Crear la estructura de paquetes bajo `com.smarttourism.backend`: `auth`, `users`, `experiences`, `schedules`, `reservations`, `payments`, `reviews`, `notifications`, `admin`, `security`, `config`, `common`
