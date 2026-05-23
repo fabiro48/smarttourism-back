@@ -34,7 +34,7 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
     - Crear enums: `Role`, `Difficulty`, `DayOfWeek`, `ReservationStatus`, `PaymentStatus`
     - _Requirements: 12.1, 12.2_
 
-- [ ] 3. Implementar capa común: excepciones, DTOs compartidos y manejo global de errores
+- [x] 3. Implementar capa común: excepciones, DTOs compartidos y manejo global de errores
   - Crear jerarquía de excepciones en `common/exception/`: `ResourceNotFoundException`, `DuplicateResourceException`, `BusinessRuleException` (con subclases `InsufficientSlotsException`, `InvalidReservationStateException`, `PaymentNotAllowedException`), `InvalidDateException`, `UnauthorizedAccessException`
   - Crear `common/dto/ErrorResponse.java` con campos `timestamp`, `status`, `error`, `message`
   - Crear `GlobalExceptionHandler` en `common/exception/` con `@RestControllerAdvice` que mapee cada excepción a su código HTTP correspondiente y retorne `ErrorResponse`
