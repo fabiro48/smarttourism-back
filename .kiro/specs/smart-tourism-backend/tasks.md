@@ -14,8 +14,8 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
   - Crear `Dockerfile` multi-stage (build con Maven + runtime con JRE 21-slim) compatible con Koyeb
   - _Requirements: 12.1, 12.5, 12.6_
 
-- [ ] 2. Implementar migraciones Flyway y entidades JPA
-  - [ ] 2.1 Crear scripts de migración Flyway en `src/main/resources/db/migration/`
+- [x] 2. Implementar migraciones Flyway y entidades JPA
+  - [x] 2.1 Crear scripts de migración Flyway en `src/main/resources/db/migration/`
     - `V1__create_users_table.sql`: tabla `users` con columnas `id` (UUID PK), `full_name`, `email` (UNIQUE), `password`, `phone`, `document_number` (UNIQUE), `role` (ENUM), `active`, `created_at`, `updated_at`
     - `V2__create_experiences_table.sql`: tabla `experiences` con columnas `id`, `title`, `description`, `category`, `location`, `duration`, `difficulty` (ENUM), `price`, `images` (TEXT[]), `active`, `created_at`, `updated_at`
     - `V3__create_schedules_table.sql`: tabla `schedules` con FK a `experiences`, columnas `day_of_week` (ENUM), `start_time`, `end_time`, `available_slots`, `active`
@@ -24,7 +24,7 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
     - `V6__create_reviews_table.sql`: tabla `reviews` con FKs a `users`, `experiences`; columnas `rating`, `comment`, `created_at`; constraint UNIQUE(`tourist_id`, `experience_id`)
     - `V7__seed_admin_user.sql`: insertar usuario administrador inicial con contraseña BCrypt
     - _Requirements: 12.2_
-  - [ ] 2.2 Crear entidades JPA en sus respectivos módulos
+  - [x] 2.2 Crear entidades JPA en sus respectivos módulos
     - `User` en `users/entity/User.java`: mapear todos los campos, usar `@Enumerated(EnumType.STRING)` para `role`, implementar `UserDetails` de Spring Security
     - `Experience` en `experiences/entity/Experience.java`: mapear campos incluyendo `images` como `@Column(columnDefinition = "text[]")`
     - `Schedule` en `schedules/entity/Schedule.java`: relación `@ManyToOne` con `Experience`
