@@ -3,18 +3,15 @@ package com.smarttourism.backend.schedules.entity;
 import com.smarttourism.backend.common.enums.DayOfWeek;
 import com.smarttourism.backend.experiences.entity.Experience;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "schedules")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -29,7 +26,7 @@ public class Schedule {
     private Experience experience;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "day_of_week", nullable = false)
+    @Column(name = "day_of_week", nullable = false, length = 20)
     private DayOfWeek dayOfWeek;
 
     @Column(name = "start_time", nullable = false)
@@ -42,25 +39,6 @@ public class Schedule {
     private Integer availableSlots;
 
     @Column(nullable = false)
-    private Boolean active;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-        if (active == null) {
-            active = true;
-        }
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
+    @Builder.Default
+    private Boolean active = true;
 }

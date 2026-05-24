@@ -4,5 +4,6 @@ public enum ReservationStatus {
     PENDING_PAYMENT,
     CONFIRMED,
     CANCELLED,
-    EXPIRED
+    EXPIRED,
+    NO_SHOW
 }

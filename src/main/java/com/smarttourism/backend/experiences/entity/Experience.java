@@ -2,10 +2,7 @@ package com.smarttourism.backend.experiences.entity;
 
 import com.smarttourism.backend.common.enums.Difficulty;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,7 +10,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "experiences")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -23,23 +21,23 @@ public class Experience {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 200)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String category;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 200)
     private String location;
 
-    @Column(nullable = false)
+    @Column
     private Integer duration;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(length = 20)
     private Difficulty difficulty;
 
     @Column(nullable = false, precision = 10, scale = 2)
@@ -49,21 +47,19 @@ public class Experience {
     private String[] images;
 
     @Column(nullable = false)
-    private Boolean active;
+    @Builder.Default
+    private Boolean active = true;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
-        if (active == null) {
-            active = true;
-        }
     }
 
     @PreUpdate

@@ -59,7 +59,7 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
     - Extender `OncePerRequestFilter`
     - Extraer token del header `Authorization: Bearer <token>`, validarlo con `JwtService`, cargar `UserDetails` y setear en `SecurityContextHolder`
     - _Requirements: 2.5_
-  - [x] 4.5 Implementar `UserDetailsServiceImpl` en `security/`
+  - [x] 4.5 Implementar `UserDetailsServiceImpl` in `security/`
     - Cargar usuario por email desde `UserRepository`, lanzar `UsernameNotFoundException` si no existe
     - _Requirements: 2.4_
   - [x] 4.6 Configurar `SecurityFilterChain` en `security/SecurityConfig.java`
@@ -70,9 +70,9 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
     - Agregar `JwtAuthenticationFilter` antes de `UsernamePasswordAuthenticationFilter`
     - _Requirements: 2.4, 9.4_
 
-- [ ] 5. Implementar módulo de autenticación (`auth`)
-  - [ ] 5.1 Crear DTOs en `auth/dto/`: `RegisterRequest`, `LoginRequest`, `AuthResponse` (con `token`, `user`)
-  - [ ] 5.2 Implementar `AuthService` en `auth/service/`
+- [x] 5. Implementar módulo de autenticación (`auth`)
+  - [x] 5.1 Crear DTOs en `auth/dto/`: `RegisterRequest`, `LoginRequest`, `AuthResponse` (con `token`, `user`)
+  - [x] 5.2 Implementar `AuthService` en `auth/service/`
     - Método `register(RegisterRequest)`: validar unicidad de email y documentNumber (lanzar `DuplicateResourceException` si ya existen), hashear contraseña con `BCryptPasswordEncoder`, crear usuario con rol `TOURIST` y `active=true`, generar y retornar JWT
     - Método `login(LoginRequest)`: autenticar con `AuthenticationManager`, verificar que el usuario esté activo (lanzar `UnauthorizedAccessException` si no), generar y retornar JWT
     - _Requirements: 1.1, 1.2, 1.3, 1.5, 1.6, 2.1, 2.2, 2.3, 2.4_
@@ -84,7 +84,7 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
     - **Property 2: Contraseña almacenada como hash BCrypt**
     - **Validates: Requirements 1.5**
     - Para contraseñas arbitrarias, verificar que el valor persistido es un hash BCrypt válido y distinto del texto plano
-  - [ ] 5.5 Implementar `AuthController` en `auth/controller/`
+  - [x] 5.5 Implementar `AuthController` en `auth/controller/`
     - `POST /api/v1/auth/register` → `AuthService.register()`, retornar 201
     - `POST /api/v1/auth/login` → `AuthService.login()`, retornar 200
     - Usar `@Valid` en los request bodies
@@ -93,17 +93,17 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
 - [ ] 6. Checkpoint — Verificar autenticación base
   - Asegurar que todos los tests del módulo `auth` y `security` pasan. Verificar que el filtro JWT funciona correctamente con pruebas de integración básicas. Consultar al usuario si hay dudas.
 
-- [ ] 7. Implementar módulo de experiencias (`experiences`)
-  - [ ] 7.1 Crear `ExperienceRepository` en `experiences/repository/`
+- [x] 7. Implementar módulo de experiencias (`experiences`)
+  - [x] 7.1 Crear `ExperienceRepository` en `experiences/repository/`
     - Extender `JpaRepository<Experience, UUID>` y `JpaSpecificationExecutor<Experience>`
     - _Requirements: 3.1, 4.1_
-  - [ ] 7.2 Crear `ExperienceSpecification` en `experiences/specification/`
+  - [x] 7.2 Crear `ExperienceSpecification` en `experiences/specification/`
     - Implementar predicados para filtros: `category` (exact match), `location` (LIKE insensible a mayúsculas), `difficulty` (exact match), `minPrice`/`maxPrice` (rango), `available` (join con schedules donde `availableSlots > 0`)
     - Combinar predicados con AND cuando se proporcionan múltiples filtros
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6_
-  - [ ] 7.3 Crear DTOs y mapper: `ExperienceRequest`, `ExperienceResponse` (con `averageRating`, `reviewCount`, lista de `ScheduleResponse`), `ExperienceMapper` (MapStruct)
+  - [x] 7.3 Crear DTOs y mapper: `ExperienceRequest`, `ExperienceResponse` (con `averageRating`, `reviewCount`, lista de `ScheduleResponse`), `ExperienceMapper` (MapStruct)
     - _Requirements: 3.1, 3.2, 8.5_
-  - [ ] 7.4 Implementar `ExperienceService` en `experiences/service/`
+  - [x] 7.4 Implementar `ExperienceService` en `experiences/service/`
     - `getExperiences(filtros, pageable)`: aplicar `ExperienceSpecification`, retornar solo activas
     - `getExperienceById(UUID)`: retornar experiencia con horarios y estadísticas de reseñas, lanzar `ResourceNotFoundException` si no existe o está inactiva
     - `createExperience(ExperienceRequest)`: crear y persistir experiencia activa
@@ -114,29 +114,29 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
     - **Property 5: Filtros de experiencias son conjuntivos (AND)**
     - **Validates: Requirements 4.1, 4.2, 4.3, 4.4, 4.5, 4.6**
     - Generar combinaciones arbitrarias de filtros válidos y verificar que cada resultado satisface todos los filtros aplicados simultáneamente
-  - [ ] 7.6 Implementar `ExperienceController` en `experiences/controller/`
+  - [x] 7.6 Implementar `ExperienceController` en `experiences/controller/`
     - `GET /api/v1/experiences` con parámetros opcionales de filtro y paginación → `ExperienceService.getExperiences()`
     - `GET /api/v1/experiences/{id}` → `ExperienceService.getExperienceById()`
     - `POST /api/v1/experiences` (ADMIN) → `ExperienceService.createExperience()`
     - `PUT /api/v1/experiences/{id}` (ADMIN) → `ExperienceService.updateExperience()`
-    - `DELETE /api/v1/experiences/{id}` (ADMIN) → `ExperirationService.deleteExperience()`
+    - `DELETE /api/v1/experiences/{id}` (ADMIN) → `ExperienceService.deleteExperience()`
     - _Requirements: 3.1, 3.2, 3.3, 9.1, 9.2, 9.3, 9.4_
 
-- [ ] 8. Implementar módulo de horarios (`schedules`)
+- [x] 8. Implementar módulo de horarios (`schedules`)
   - Crear `ScheduleRepository` extendiendo `JpaRepository<Schedule, UUID>`
   - Crear DTOs: `ScheduleRequest`, `ScheduleResponse` y `ScheduleMapper` (MapStruct)
   - Implementar `ScheduleService`: `createSchedule(UUID experienceId, ScheduleRequest)`, `updateSchedule(UUID, ScheduleRequest)`, `deactivateSchedule(UUID)` (borrado lógico)
   - Implementar `ScheduleController` bajo `/api/v1/experiences/{id}/schedules` (solo ADMIN): `POST`, `PUT /{scheduleId}`, `DELETE /{scheduleId}`
   - _Requirements: 9.5_
 
-- [ ] 9. Implementar módulo de reservas (`reservations`)
-  - [ ] 9.1 Crear `ReservationRepository` en `reservations/repository/`
+- [x] 9. Implementar módulo de reservas (`reservations`)
+  - [x] 9.1 Crear `ReservationRepository` en `reservations/repository/`
     - Método `findByTouristIdOrderByCreatedAtDesc(UUID touristId)`
     - Método `findByStatusAndExpirationDateBefore(ReservationStatus status, LocalDateTime dateTime)` para el scheduler
     - _Requirements: 5.5, 6.2_
-  - [ ] 9.2 Crear DTOs y mapper: `ReservationRequest`, `ReservationResponse` (con `totalAmount`, `expirationDate`, `status`), `ReservationMapper` (MapStruct)
+  - [x] 9.2 Crear DTOs y mapper: `ReservationRequest`, `ReservationResponse` (con `totalAmount`, `expirationDate`, `status`), `ReservationMapper` (MapStruct)
     - _Requirements: 5.1, 5.2_
-  - [ ] 9.3 Implementar `ReservationService` en `reservations/service/`
+  - [x] 9.3 Implementar `ReservationService` en `reservations/service/`
     - `createReservation(UUID touristId, ReservationRequest)`: dentro de `@Transactional`, hacer `SELECT FOR UPDATE` sobre el `Schedule`, verificar `availableSlots >= quantity` (lanzar `InsufficientSlotsException` si no), decrementar `availableSlots`, calcular `totalAmount = price * quantity`, calcular `expirationDate = now() + 15 min`, crear reserva con estado `PENDING_PAYMENT`
     - `getMyReservations(UUID touristId)`: retornar lista ordenada por `createdAt` desc
     - `cancelReservation(UUID reservationId, UUID touristId)`: verificar propiedad (lanzar `UnauthorizedAccessException` si no), verificar estado cancelable (`PENDING_PAYMENT` o `CONFIRMED`, lanzar `InvalidReservationStateException` si no), cambiar estado a `CANCELLED`, restaurar `availableSlots` en el `Schedule`
@@ -149,7 +149,7 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
     - **Property 7: Restauración de cupos en cancelación y expiración**
     - **Validates: Requirements 5.6, 6.2**
     - Para reservas que transitan a `CANCELLED` o `EXPIRED`, verificar que `availableSlots` se incrementa exactamente en `quantity`
-  - [ ] 9.6 Implementar `ExpirationService` en `reservations/service/`
+  - [x] 9.6 Implementar `ExpirationService` en `reservations/service/`
     - Método `expireReservations()` anotado con `@Scheduled(fixedDelay = 60000)`
     - Buscar reservas con `status = PENDING_PAYMENT` y `expirationDate < now()`
     - Por cada reserva: dentro de `@Transactional`, cambiar estado a `EXPIRED`, restaurar `availableSlots` en el `Schedule`, disparar notificación asíncrona
@@ -158,7 +158,7 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
     - **Property 8: Expiración automática a los 15 minutos**
     - **Validates: Requirements 6.2, 6.3**
     - Crear reservas con `expirationDate` en el pasado y verificar que `ExpirationService` las marca como `EXPIRED` y restaura cupos
-  - [ ] 9.8 Implementar `ReservationController` en `reservations/controller/`
+  - [x] 9.8 Implementar `ReservationController` en `reservations/controller/`
     - `POST /api/v1/reservations` (TOURIST) → `ReservationService.createReservation()`
     - `GET /api/v1/reservations/me` (TOURIST) → `ReservationService.getMyReservations()`
     - `PATCH /api/v1/reservations/{id}/cancel` (TOURIST) → `ReservationService.cancelReservation()`
@@ -167,30 +167,30 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
 - [ ] 10. Checkpoint — Verificar módulo de reservas
   - Asegurar que todos los tests de reservas pasan, incluyendo las propiedades de sobreventa y restauración de cupos. Consultar al usuario si hay dudas.
 
-- [ ] 11. Implementar módulo de pagos (`payments`)
-  - [ ] 11.1 Crear `PaymentRepository` extendiendo `JpaRepository<Payment, UUID>`
-  - [ ] 11.2 Crear DTOs y mapper: `PaymentRequest` (con `reservationId`), `PaymentResponse` (con `paymentStatus`, `transactionReference`, `amount`), `PaymentMapper` (MapStruct)
+- [x] 11. Implementar módulo de pagos (`payments`)
+  - [x] 11.1 Crear `PaymentRepository` extendiendo `JpaRepository<Payment, UUID>`
+  - [x] 11.2 Crear DTOs y mapper: `PaymentRequest` (con `reservationId`), `PaymentResponse` (con `paymentStatus`, `transactionReference`, `amount`), `PaymentMapper` (MapStruct)
     - _Requirements: 7.1, 7.6_
-  - [ ] 11.3 Implementar `PaymentService` en `payments/service/`
+  - [x] 11.3 Implementar `PaymentService` en `payments/service/`
     - `simulatePayment(UUID reservationId, UUID touristId)`: verificar que la reserva existe y pertenece al turista (lanzar 404/403), verificar que el estado es `PENDING_PAYMENT` (lanzar `PaymentNotAllowedException` si no), dentro de `@Transactional`: generar `transactionReference` UUID único, simular resultado (lógica aleatoria configurable), crear registro `Payment`, si `APPROVED` actualizar reserva a `CONFIRMED`, retornar `PaymentResponse`
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7_
   - [ ]* 11.4 Escribir prueba de propiedad para confirmación de reserva solo por pago APPROVED
     - **Property 9: Confirmación de reserva solo por pago APPROVED**
     - **Validates: Requirements 7.2, 7.3**
     - Para todos los posibles `PaymentStatus` distintos de `APPROVED`, verificar que la reserva no cambia a `CONFIRMED`; para `APPROVED`, verificar que sí cambia
-  - [ ] 11.5 Implementar `PaymentController` en `payments/controller/`
+  - [x] 11.5 Implementar `PaymentController` en `payments/controller/`
     - `POST /api/v1/payments/simulate` (TOURIST) → `PaymentService.simulatePayment()`
     - _Requirements: 7.1_
 
-- [ ] 12. Implementar módulo de reseñas (`reviews`)
-  - [ ] 12.1 Crear `ReviewRepository` en `reviews/repository/`
+- [x] 12. Implementar módulo de reseñas (`reviews`)
+  - [x] 12.1 Crear `ReviewRepository` en `reviews/repository/`
     - Método `existsByTouristIdAndExperienceId(UUID touristId, UUID experienceId)`
     - Método `findByExperienceId(UUID experienceId)` para calcular promedio
     - _Requirements: 8.4, 8.5_
-  - [ ] 12.2 Crear DTOs y mapper: `ReviewRequest` (con `experienceId`, `rating`, `comment`), `ReviewResponse`, `ReviewMapper` (MapStruct)
+  - [x] 12.2 Crear DTOs y mapper: `ReviewRequest` (con `experienceId`, `rating`, `comment`), `ReviewResponse`, `ReviewMapper` (MapStruct)
     - Agregar validación `@Min(1) @Max(5)` en `rating` del `ReviewRequest`
     - _Requirements: 8.1, 8.2_
-  - [ ] 12.3 Implementar `ReviewService` en `reviews/service/`
+  - [x] 12.3 Implementar `ReviewService` en `reviews/service/`
     - `createReview(UUID touristId, ReviewRequest)`: verificar que el turista tiene al menos una reserva `CONFIRMED` para la experiencia (lanzar `UnauthorizedAccessException` con 403 si no), verificar unicidad (lanzar `DuplicateResourceException` si ya existe reseña), crear y persistir reseña
     - `getReviewsByExperience(UUID experienceId)`: retornar lista de reseñas
     - _Requirements: 8.1, 8.3, 8.4_
@@ -202,12 +202,12 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
     - **Property 11: Rating dentro del rango válido [1, 5]**
     - **Validates: Requirements 8.2**
     - Generar valores de rating fuera del rango [1,5] y verificar rechazo con 400; generar valores dentro del rango y verificar aceptación
-  - [ ] 12.6 Implementar `ReviewController` en `reviews/controller/`
+  - [x] 12.6 Implementar `ReviewController` en `reviews/controller/`
     - `POST /api/v1/reviews` (TOURIST) → `ReviewService.createReview()`
     - `GET /api/v1/experiences/{id}/reviews` (público) → `ReviewService.getReviewsByExperience()`
     - _Requirements: 8.1, 8.5_
 
-- [ ] 13. Implementar módulo de notificaciones (`notifications`)
+- [x] 13. Implementar módulo de notificaciones (`notifications`)
   - Crear `NotificationService` en `notifications/service/`
     - Inyectar `JavaMailSender` y `@Value` para el email remitente
     - Método `sendReservationCreatedEmail(String to, ReservationResponse reservation)`: enviar correo con detalles de reserva y tiempo límite de pago; anotar con `@Async`
@@ -219,12 +219,12 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
   - Integrar llamadas a `NotificationService` en `AuthService` (registro), `ReservationService` (creación, cancelación), `PaymentService` (resultado de pago) y `ExpirationService` (expiración)
   - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 10.6_
 
-- [ ] 14. Implementar módulo de administración (`admin`)
-  - [ ] 14.1 Implementar `AdminReservationController` en `admin/controller/`
+- [x] 14. Implementar módulo de administración (`admin`)
+  - [x] 14.1 Implementar `AdminReservationController` en `admin/controller/`
     - `GET /api/v1/admin/reservations` (ADMIN): retornar lista paginada con filtros opcionales por `status`, `experienceId` y rango de fechas
     - Crear `AdminReservationService` con método `getAllReservations(filtros, pageable)` usando `JPA Specification`
     - _Requirements: 9.6_
-  - [ ] 14.2 Implementar `AdminUserController` y `AdminUserService` en `admin/`
+  - [x] 14.2 Implementar `AdminUserController` y `AdminUserService` en `admin/`
     - `GET /api/v1/admin/users` (ADMIN): retornar lista paginada de todos los usuarios
     - `PATCH /api/v1/admin/users/{id}/status` (ADMIN): actualizar campo `active` del usuario; si se desactiva, el usuario no podrá autenticarse (verificado en `UserDetailsServiceImpl`)
     - _Requirements: 9.7, 9.8_
@@ -233,7 +233,7 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
     - **Validates: Requirements 9.4**
     - Generar tokens JWT con rol `TOURIST` y verificar que cualquier solicitud a endpoints de administración retorna 403
 
-- [ ] 15. Implementar configuración de CORS y Actuator
+- [x] 15. Implementar configuración de CORS y Actuator
   - Crear `CorsConfig.java` en `config/` con `@Bean CorsConfigurationSource`
     - Leer orígenes permitidos desde `${CORS_ALLOWED_ORIGINS}` (lista separada por comas)
     - Métodos permitidos: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `OPTIONS`
@@ -242,7 +242,6 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
   - Configurar `management.endpoints.web.exposure.include=health` en `application.yml`
   - Configurar `management.endpoint.health.show-details=always` para mostrar estado de DB
   - _Requirements: 11.1, 11.2, 11.3, 11.4, 12.4_
-
 - [ ] 16. Implementar prueba de propiedad para formato de error uniforme
   - [ ]* 16.1 Escribir prueba de propiedad para formato de error uniforme
     - **Property 13: Formato de error uniforme**
@@ -275,3 +274,26 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
 - Las pruebas de integración usan **Testcontainers** con un perfil `test` separado
 - El bloqueo pesimista (`SELECT FOR UPDATE`) en la creación de reservas es crítico para evitar sobreventa
 - Toda la configuración sensible se lee desde variables de entorno, sin valores hardcodeados
+
+## Task Dependency Graph
+
+```json
+{
+  "waves": [
+    { "id": 0, "tasks": ["2.1"] },
+    { "id": 1, "tasks": ["2.2"] },
+    { "id": 2, "tasks": ["4.1", "4.4", "4.5"] },
+    { "id": 3, "tasks": ["4.2", "4.3", "4.6"] },
+    { "id": 4, "tasks": ["5.1", "7.1"] },
+    { "id": 5, "tasks": ["5.2", "7.2", "7.3"] },
+    { "id": 6, "tasks": ["5.3", "5.4", "5.5", "7.4"] },
+    { "id": 7, "tasks": ["7.5", "7.6", "9.1", "9.2"] },
+    { "id": 8, "tasks": ["9.3", "11.1", "12.1"] },
+    { "id": 9, "tasks": ["9.4", "9.5", "9.6", "11.2", "12.2"] },
+    { "id": 10, "tasks": ["9.7", "9.8", "11.3", "12.3", "14.1", "14.2"] },
+    { "id": 11, "tasks": ["11.4", "11.5", "12.4", "12.5", "12.6", "14.3"] },
+    { "id": 12, "tasks": ["16.1"] },
+    { "id": 13, "tasks": ["17.1", "17.2"] }
+  ]
+}
+```
