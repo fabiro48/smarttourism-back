@@ -5,11 +5,13 @@ import com.smarttourism.backend.common.enums.ReservationStatus;
 import com.smarttourism.backend.common.exception.PaymentNotAllowedException;
 import com.smarttourism.backend.common.exception.ResourceNotFoundException;
 import com.smarttourism.backend.common.exception.UnauthorizedAccessException;
+import com.smarttourism.backend.notifications.service.NotificationService;
 import com.smarttourism.backend.payments.dto.PaymentResponse;
 import com.smarttourism.backend.payments.entity.Payment;
 import com.smarttourism.backend.payments.mapper.PaymentMapper;
 import com.smarttourism.backend.payments.repository.PaymentRepository;
 import com.smarttourism.backend.reservations.entity.Reservation;
+import com.smarttourism.backend.reservations.mapper.ReservationMapper;
 import com.smarttourism.backend.reservations.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +44,8 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final ReservationRepository reservationRepository;
     private final PaymentMapper paymentMapper;
+    private final ReservationMapper reservationMapper;
+    private final NotificationService notificationService;
     private final Random random = new Random();
 
     /**
@@ -120,6 +124,12 @@ public class PaymentService {
         }
 
         // Requirement 7.6: Return PaymentResponse with all details
-        return paymentMapper.toResponse(payment);
+        PaymentResponse response = paymentMapper.toResponse(payment);
+        notificationService.sendPaymentResultEmail(
+                reservation.getTourist().getEmail(),
+                response,
+                reservationMapper.toResponse(reservation)
+        );
+        return response;
     }
 }

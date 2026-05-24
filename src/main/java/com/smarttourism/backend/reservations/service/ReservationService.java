@@ -7,6 +7,7 @@ import com.smarttourism.backend.common.exception.ResourceNotFoundException;
 import com.smarttourism.backend.common.exception.UnauthorizedAccessException;
 import com.smarttourism.backend.experiences.entity.Experience;
 import com.smarttourism.backend.experiences.repository.ExperienceRepository;
+import com.smarttourism.backend.notifications.service.NotificationService;
 import com.smarttourism.backend.reservations.dto.ReservationRequest;
 import com.smarttourism.backend.reservations.dto.ReservationResponse;
 import com.smarttourism.backend.reservations.entity.Reservation;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -56,6 +58,7 @@ public class ReservationService {
     private final UserRepository userRepository;
     private final ReservationMapper reservationMapper;
     private final EntityManager entityManager;
+    private final NotificationService notificationService;
 
     /**
      * Creates a new reservation for the given tourist.
@@ -132,7 +135,9 @@ public class ReservationService {
         Reservation savedReservation = reservationRepository.save(reservation);
         log.info("Reservation {} created successfully for tourist {}", savedReservation.getId(), touristId);
 
-        return reservationMapper.toResponse(savedReservation);
+        ReservationResponse response = reservationMapper.toResponse(savedReservation);
+        notificationService.sendReservationCreatedEmail(tourist.getEmail(), response);
+        return response;
     }
 
     /**
@@ -209,5 +214,13 @@ public class ReservationService {
 
         log.info("Reservation {} cancelled successfully, {} slots restored to schedule {}",
                 reservationId, reservation.getQuantity(), schedule.getId());
+
+        // Determine refund eligibility: CONFIRMED + reservationDate >= 2 days from now
+        boolean eligibleForRefund = reservation.getStatus() == ReservationStatus.CONFIRMED
+                && reservation.getReservationDate() != null
+                && !reservation.getReservationDate().isBefore(LocalDate.now().plusDays(2));
+
+        ReservationResponse response = reservationMapper.toResponse(reservation);
+        notificationService.sendCancellationEmail(reservation.getTourist().getEmail(), response, eligibleForRefund);
     }
 }

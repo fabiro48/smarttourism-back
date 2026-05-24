@@ -1,7 +1,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 1: Build
 # ─────────────────────────────────────────────────────────────────────────────
-FROM maven:3.9.9-eclipse-temurin-21 AS build
+FROM maven:3.9.9-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ RUN mvn package -DskipTests -B
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 2: Runtime
 # ─────────────────────────────────────────────────────────────────────────────
-FROM eclipse-temurin:21-jre-jammy AS runtime
+FROM eclipse-temurin:17-jre-jammy AS runtime
 
 # Create a non-root user for security
 RUN groupadd --system appgroup && useradd --system --gid appgroup appuser

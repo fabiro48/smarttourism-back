@@ -1,7 +1,9 @@
 package com.smarttourism.backend.reservations.service;
 
 import com.smarttourism.backend.common.enums.ReservationStatus;
+import com.smarttourism.backend.notifications.service.NotificationService;
 import com.smarttourism.backend.reservations.entity.Reservation;
+import com.smarttourism.backend.reservations.mapper.ReservationMapper;
 import com.smarttourism.backend.reservations.repository.ReservationRepository;
 import com.smarttourism.backend.schedules.entity.Schedule;
 import com.smarttourism.backend.schedules.repository.ScheduleRepository;
@@ -26,6 +28,8 @@ public class ExpirationService {
 
     private final ReservationRepository reservationRepository;
     private final ScheduleRepository scheduleRepository;
+    private final ReservationMapper reservationMapper;
+    private final NotificationService notificationService;
 
     /**
      * Scheduled task that runs every 60 seconds to expire reservations with status PENDING_PAYMENT
@@ -35,7 +39,7 @@ public class ExpirationService {
      * <ul>
      *   <li>Changes status to EXPIRED</li>
      *   <li>Restores availableSlots in the associated Schedule</li>
-     *   <li>Triggers async notification (TODO: NotificationService doesn't exist yet)</li>
+     *   <li>Triggers async expiration email via {@link NotificationService}</li>
      * </ul>
      *
      * <p>Validates: Requirements 6.2, 6.3
@@ -83,7 +87,9 @@ public class ExpirationService {
         log.info("Expired reservation {} and restored {} slots to schedule {}",
                 reservation.getId(), reservation.getQuantity(), schedule.getId());
 
-        // TODO: Trigger async notification when NotificationService is implemented
-        // notificationService.sendExpirationEmail(reservation.getTourist().getEmail(), reservationMapper.toResponse(reservation));
+        notificationService.sendExpirationEmail(
+                reservation.getTourist().getEmail(),
+                reservationMapper.toResponse(reservation)
+        );
     }
 }

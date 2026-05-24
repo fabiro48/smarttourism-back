@@ -4,7 +4,6 @@ import com.smarttourism.backend.common.dto.ErrorResponse;
 import net.jqwik.api.*;
 import net.jqwik.api.constraints.IntRange;
 import net.jqwik.api.constraints.NotBlank;
-
 import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,11 +24,14 @@ class ErrorFormatProperties {
             @ForAll @NotBlank String errorType
     ) {
         // Feature: smart-tourism-backend, Property 13: Formato de error uniforme
+        Assume.that(errorMessage.isBlank() == false);
+        Assume.that(errorType.isBlank() == false);
+
         ErrorResponse response = ErrorResponse.builder()
                 .timestamp(Instant.now())
                 .status(httpStatus)
-                .error(errorType)
-                .message(errorMessage)
+                .error(errorType.trim())
+                .message(errorMessage.trim())
                 .build();
 
         assertThat(response.getTimestamp()).isNotNull();

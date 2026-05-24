@@ -1,16 +1,22 @@
 package com.smarttourism.backend.reservations.service;
 
 import com.smarttourism.backend.common.enums.ReservationStatus;
+import com.smarttourism.backend.notifications.service.NotificationService;
+import com.smarttourism.backend.reservations.dto.ReservationResponse;
 import com.smarttourism.backend.reservations.entity.Reservation;
+import com.smarttourism.backend.reservations.mapper.ReservationMapper;
 import com.smarttourism.backend.reservations.repository.ReservationRepository;
 import com.smarttourism.backend.schedules.entity.Schedule;
 import com.smarttourism.backend.schedules.repository.ScheduleRepository;
+import com.smarttourism.backend.users.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -28,6 +34,7 @@ import static org.mockito.Mockito.*;
  * <p>Validates: Requirements 6.2, 6.3
  */
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class ExpirationServiceTest {
 
     @Mock
@@ -36,14 +43,27 @@ class ExpirationServiceTest {
     @Mock
     private ScheduleRepository scheduleRepository;
 
+    @Mock
+    private ReservationMapper reservationMapper;
+
+    @Mock
+    private NotificationService notificationService;
+
     @InjectMocks
     private ExpirationService expirationService;
 
     private Reservation expiredReservation;
     private Schedule schedule;
+    private User tourist;
 
     @BeforeEach
     void setUp() {
+        tourist = User.builder()
+                .id(UUID.randomUUID())
+                .email("tourist@test.com")
+                .fullName("Test Tourist")
+                .build();
+
         schedule = Schedule.builder()
                 .id(UUID.randomUUID())
                 .availableSlots(5)
@@ -55,7 +75,12 @@ class ExpirationServiceTest {
                 .expirationDate(LocalDateTime.now().minusMinutes(5))
                 .quantity(2)
                 .schedule(schedule)
+                .tourist(tourist)
                 .build();
+
+        // Stub mapper to return a non-null response
+        when(reservationMapper.toResponse(any(Reservation.class)))
+                .thenReturn(new ReservationResponse());
     }
 
     @Test
@@ -109,6 +134,7 @@ class ExpirationServiceTest {
                 .status(ReservationStatus.PENDING_PAYMENT)
                 .quantity(1)
                 .schedule(schedule)
+                .tourist(tourist)
                 .build();
         
         Reservation reservation2 = Reservation.builder()
@@ -116,6 +142,7 @@ class ExpirationServiceTest {
                 .status(ReservationStatus.PENDING_PAYMENT)
                 .quantity(3)
                 .schedule(schedule)
+                .tourist(tourist)
                 .build();
 
         List<Reservation> expiredReservations = Arrays.asList(reservation1, reservation2);
