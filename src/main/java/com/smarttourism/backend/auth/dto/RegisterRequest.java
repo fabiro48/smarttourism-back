@@ -2,7 +2,10 @@ package com.smarttourism.backend.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Request body for {@code POST /api/v1/auth/register}.
@@ -13,6 +16,9 @@ import lombok.Data;
  * <p>Validates: Requirements 1.1, 1.4
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RegisterRequest {
 
     /** Full name of the user. */

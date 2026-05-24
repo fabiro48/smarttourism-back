@@ -47,12 +47,11 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
     - Método `extractEmail(String token)`: extrae el subject del token
     - Usar `io.jsonwebtoken` (JJWT) con secreto leído de `${JWT_SECRET}`
     - _Requirements: 2.1, 2.5, 2.6_
-  - [ ]* 4.2 Escribir prueba de propiedad para JwtService
+  - [x]* 4.2 Escribir prueba de propiedad para JwtService
     - **Property 3: Token JWT contiene rol y es verificable**
     - **Validates: Requirements 2.1, 2.6**
     - Generar usuarios con emails y roles arbitrarios, verificar que el token generado contiene el rol correcto y es validable con la misma clave
-  - [ ]* 4.3 Escribir prueba de propiedad para fallo de autenticación
-    - **Property 4: Fallo de autenticación nunca retorna HTTP 200**
+  - [x]* 4.3 Escribir prueba de propiedad para fallo de autenticación    - **Property 4: Fallo de autenticación nunca retorna HTTP 200**
     - **Validates: Requirements 2.2, 2.3**
     - Generar credenciales inválidas arbitrarias y verificar que la respuesta nunca es 200
   - [x] 4.4 Implementar `JwtAuthenticationFilter` en `security/`
@@ -76,11 +75,11 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
     - Método `register(RegisterRequest)`: validar unicidad de email y documentNumber (lanzar `DuplicateResourceException` si ya existen), hashear contraseña con `BCryptPasswordEncoder`, crear usuario con rol `TOURIST` y `active=true`, generar y retornar JWT
     - Método `login(LoginRequest)`: autenticar con `AuthenticationManager`, verificar que el usuario esté activo (lanzar `UnauthorizedAccessException` si no), generar y retornar JWT
     - _Requirements: 1.1, 1.2, 1.3, 1.5, 1.6, 2.1, 2.2, 2.3, 2.4_
-  - [ ]* 5.3 Escribir prueba de propiedad para unicidad de email y documento
+  - [x]* 5.3 Escribir prueba de propiedad para unicidad de email y documento
     - **Property 1: Unicidad de email y documento en registro**
     - **Validates: Requirements 1.2, 1.3**
     - Generar pares de solicitudes de registro con email o documentNumber duplicado y verificar que la segunda siempre retorna 409
-  - [ ]* 5.4 Escribir prueba de propiedad para almacenamiento de contraseña
+  - [x]* 5.4 Escribir prueba de propiedad para almacenamiento de contraseña
     - **Property 2: Contraseña almacenada como hash BCrypt**
     - **Validates: Requirements 1.5**
     - Para contraseñas arbitrarias, verificar que el valor persistido es un hash BCrypt válido y distinto del texto plano
@@ -90,7 +89,7 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
     - Usar `@Valid` en los request bodies
     - _Requirements: 1.1, 1.4, 2.1_
 
-- [ ] 6. Checkpoint — Verificar autenticación base
+- [x] 6. Checkpoint — Verificar autenticación base
   - Asegurar que todos los tests del módulo `auth` y `security` pasan. Verificar que el filtro JWT funciona correctamente con pruebas de integración básicas. Consultar al usuario si hay dudas.
 
 - [x] 7. Implementar módulo de experiencias (`experiences`)
@@ -110,7 +109,7 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
     - `updateExperience(UUID, ExperienceRequest)`: actualizar campos, lanzar 404 si no existe
     - `deleteExperience(UUID)`: borrado lógico (`active = false`)
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 9.1, 9.2, 9.3_
-  - [ ]* 7.5 Escribir prueba de propiedad para filtros conjuntivos
+  - [x]* 7.5 Escribir prueba de propiedad para filtros conjuntivos
     - **Property 5: Filtros de experiencias son conjuntivos (AND)**
     - **Validates: Requirements 4.1, 4.2, 4.3, 4.4, 4.5, 4.6**
     - Generar combinaciones arbitrarias de filtros válidos y verificar que cada resultado satisface todos los filtros aplicados simultáneamente
@@ -141,11 +140,11 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
     - `getMyReservations(UUID touristId)`: retornar lista ordenada por `createdAt` desc
     - `cancelReservation(UUID reservationId, UUID touristId)`: verificar propiedad (lanzar `UnauthorizedAccessException` si no), verificar estado cancelable (`PENDING_PAYMENT` o `CONFIRMED`, lanzar `InvalidReservationStateException` si no), cambiar estado a `CANCELLED`, restaurar `availableSlots` en el `Schedule`
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 6.1, 6.4, 6.5, 6.6_
-  - [ ]* 9.4 Escribir prueba de propiedad para control de sobreventa
+  - [x]* 9.4 Escribir prueba de propiedad para control de sobreventa
     - **Property 6: Control de sobreventa — los cupos nunca son negativos**
     - **Validates: Requirements 6.1, 5.3**
     - Generar secuencias de creaciones de reservas concurrentes y verificar que `availableSlots` nunca es negativo y la suma de reservas activas nunca supera la capacidad original
-  - [ ]* 9.5 Escribir prueba de propiedad para restauración de cupos
+  - [x]* 9.5 Escribir prueba de propiedad para restauración de cupos
     - **Property 7: Restauración de cupos en cancelación y expiración**
     - **Validates: Requirements 5.6, 6.2**
     - Para reservas que transitan a `CANCELLED` o `EXPIRED`, verificar que `availableSlots` se incrementa exactamente en `quantity`
@@ -154,7 +153,7 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
     - Buscar reservas con `status = PENDING_PAYMENT` y `expirationDate < now()`
     - Por cada reserva: dentro de `@Transactional`, cambiar estado a `EXPIRED`, restaurar `availableSlots` en el `Schedule`, disparar notificación asíncrona
     - _Requirements: 6.2, 6.3_
-  - [ ]* 9.7 Escribir prueba de propiedad para expiración automática
+  - [x]* 9.7 Escribir prueba de propiedad para expiración automática
     - **Property 8: Expiración automática a los 15 minutos**
     - **Validates: Requirements 6.2, 6.3**
     - Crear reservas con `expirationDate` en el pasado y verificar que `ExpirationService` las marca como `EXPIRED` y restaura cupos
@@ -164,7 +163,7 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
     - `PATCH /api/v1/reservations/{id}/cancel` (TOURIST) → `ReservationService.cancelReservation()`
     - _Requirements: 5.1, 5.5, 5.6_
 
-- [ ] 10. Checkpoint — Verificar módulo de reservas
+- [x] 10. Checkpoint — Verificar módulo de reservas
   - Asegurar que todos los tests de reservas pasan, incluyendo las propiedades de sobreventa y restauración de cupos. Consultar al usuario si hay dudas.
 
 - [x] 11. Implementar módulo de pagos (`payments`)
@@ -174,7 +173,7 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
   - [x] 11.3 Implementar `PaymentService` en `payments/service/`
     - `simulatePayment(UUID reservationId, UUID touristId)`: verificar que la reserva existe y pertenece al turista (lanzar 404/403), verificar que el estado es `PENDING_PAYMENT` (lanzar `PaymentNotAllowedException` si no), dentro de `@Transactional`: generar `transactionReference` UUID único, simular resultado (lógica aleatoria configurable), crear registro `Payment`, si `APPROVED` actualizar reserva a `CONFIRMED`, retornar `PaymentResponse`
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7_
-  - [ ]* 11.4 Escribir prueba de propiedad para confirmación de reserva solo por pago APPROVED
+  - [x]* 11.4 Escribir prueba de propiedad para confirmación de reserva solo por pago APPROVED
     - **Property 9: Confirmación de reserva solo por pago APPROVED**
     - **Validates: Requirements 7.2, 7.3**
     - Para todos los posibles `PaymentStatus` distintos de `APPROVED`, verificar que la reserva no cambia a `CONFIRMED`; para `APPROVED`, verificar que sí cambia
@@ -194,11 +193,11 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
     - `createReview(UUID touristId, ReviewRequest)`: verificar que el turista tiene al menos una reserva `CONFIRMED` para la experiencia (lanzar `UnauthorizedAccessException` con 403 si no), verificar unicidad (lanzar `DuplicateResourceException` si ya existe reseña), crear y persistir reseña
     - `getReviewsByExperience(UUID experienceId)`: retornar lista de reseñas
     - _Requirements: 8.1, 8.3, 8.4_
-  - [ ]* 12.4 Escribir prueba de propiedad para reseña solo con reserva CONFIRMED
+  - [x]* 12.4 Escribir prueba de propiedad para reseña solo con reserva CONFIRMED
     - **Property 10: Reseña solo para experiencias con reserva CONFIRMED**
     - **Validates: Requirements 8.3**
     - Generar turistas sin reserva confirmada para una experiencia y verificar que la creación de reseña retorna 403
-  - [ ]* 12.5 Escribir prueba de propiedad para rating en rango válido
+  - [x]* 12.5 Escribir prueba de propiedad para rating en rango válido
     - **Property 11: Rating dentro del rango válido [1, 5]**
     - **Validates: Requirements 8.2**
     - Generar valores de rating fuera del rango [1,5] y verificar rechazo con 400; generar valores dentro del rango y verificar aceptación
@@ -228,7 +227,7 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
     - `GET /api/v1/admin/users` (ADMIN): retornar lista paginada de todos los usuarios
     - `PATCH /api/v1/admin/users/{id}/status` (ADMIN): actualizar campo `active` del usuario; si se desactiva, el usuario no podrá autenticarse (verificado en `UserDetailsServiceImpl`)
     - _Requirements: 9.7, 9.8_
-  - [ ]* 14.3 Escribir prueba de propiedad para endpoints de administración inaccesibles para TOURIST
+  - [x]* 14.3 Escribir prueba de propiedad para endpoints de administración inaccesibles para TOURIST
     - **Property 12: Endpoints de administración inaccesibles para TOURIST**
     - **Validates: Requirements 9.4**
     - Generar tokens JWT con rol `TOURIST` y verificar que cualquier solicitud a endpoints de administración retorna 403
@@ -242,23 +241,23 @@ Implementación incremental del backend de Turismo Inteligente Santander usando 
   - Configurar `management.endpoints.web.exposure.include=health` en `application.yml`
   - Configurar `management.endpoint.health.show-details=always` para mostrar estado de DB
   - _Requirements: 11.1, 11.2, 11.3, 11.4, 12.4_
-- [ ] 16. Implementar prueba de propiedad para formato de error uniforme
-  - [ ]* 16.1 Escribir prueba de propiedad para formato de error uniforme
+- [x] 16. Implementar prueba de propiedad para formato de error uniforme
+  - [x]* 16.1 Escribir prueba de propiedad para formato de error uniforme
     - **Property 13: Formato de error uniforme**
     - **Validates: Requirements 12.7**
     - Para distintos tipos de errores (4xx, 5xx), verificar que el cuerpo de respuesta siempre contiene los campos `timestamp`, `status`, `error` y `message`
 
-- [ ] 17. Pruebas de integración con Testcontainers
-  - [ ]* 17.1 Escribir prueba de integración para el flujo completo: registro → login → reserva → pago → reseña
+- [x] 17. Pruebas de integración con Testcontainers
+  - [x]* 17.1 Escribir prueba de integración para el flujo completo: registro → login → reserva → pago → reseña
     - Levantar contenedor PostgreSQL con Testcontainers
     - Verificar que el flujo completo funciona end-to-end con datos reales en base de datos
     - _Requirements: 1.1, 2.1, 5.1, 7.1, 8.1_
-  - [ ]* 17.2 Escribir prueba de integración para configuración de CORS y health check
+  - [x]* 17.2 Escribir prueba de integración para configuración de CORS y health check
     - Verificar que las solicitudes preflight `OPTIONS` retornan 200 con headers CORS correctos
     - Verificar que `GET /actuator/health` retorna estado del sistema y de la base de datos
     - _Requirements: 11.4, 12.4_
 
-- [ ] 18. Checkpoint final — Verificar integridad completa del sistema
+- [x] 18. Checkpoint final — Verificar integridad completa del sistema
   - Ejecutar todos los tests (unitarios, de propiedades e integración) y asegurar que pasan
   - Verificar que el `Dockerfile` construye correctamente la imagen
   - Verificar que la aplicación arranca con variables de entorno configuradas
