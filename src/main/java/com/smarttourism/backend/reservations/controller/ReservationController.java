@@ -4,6 +4,8 @@ import com.smarttourism.backend.reservations.dto.ReservationRequest;
 import com.smarttourism.backend.reservations.dto.ReservationResponse;
 import com.smarttourism.backend.reservations.service.ReservationService;
 import com.smarttourism.backend.users.entity.User;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,7 @@ import java.util.UUID;
  *
  * <p>Validates: Requirements 5.1, 5.5, 5.6
  */
+@Tag(name = "reservations", description = "Gestión de reservas de turistas")
 @RestController
 @RequestMapping("/api/v1/reservations")
 @RequiredArgsConstructor
@@ -50,6 +53,7 @@ public class ReservationController {
      *                       the authenticated user's principal
      * @return HTTP 201 with the created {@link ReservationResponse} DTO
      */
+    @Operation(summary = "Crear una reserva para el turista autenticado")
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
             @Valid @RequestBody ReservationRequest request,
@@ -70,6 +74,7 @@ public class ReservationController {
      *                       the authenticated user's principal
      * @return HTTP 200 with a list of {@link ReservationResponse} DTOs
      */
+    @Operation(summary = "Obtener mis reservas")
     @GetMapping("/me")
     public ResponseEntity<List<ReservationResponse>> getMyReservations(
             Authentication authentication) {
@@ -91,6 +96,7 @@ public class ReservationController {
      *                       the authenticated user's principal
      * @return HTTP 204 No Content on success
      */
+    @Operation(summary = "Cancelar una reserva propia")
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<Void> cancelReservation(
             @PathVariable UUID id,

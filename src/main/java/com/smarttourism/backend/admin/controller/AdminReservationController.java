@@ -3,6 +3,8 @@ package com.smarttourism.backend.admin.controller;
 import com.smarttourism.backend.admin.service.AdminReservationService;
 import com.smarttourism.backend.common.enums.ReservationStatus;
 import com.smarttourism.backend.reservations.dto.ReservationResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,7 @@ import java.util.UUID;
  *
  * <p>Validates: Requirement 9.6
  */
+@Tag(name = "admin", description = "Administración de reservas (solo ADMIN)")
 @RestController
 @RequestMapping("/api/v1/admin/reservations")
 @RequiredArgsConstructor
@@ -41,6 +44,7 @@ public class AdminReservationController {
      * @param pageable      pagination parameters (default: page 0, size 20, sort by createdAt desc)
      * @return page of reservations
      */
+    @Operation(summary = "Listar todas las reservas con filtros opcionales (solo ADMIN)")
     @GetMapping
     public ResponseEntity<Page<ReservationResponse>> getAllReservations(
             @RequestParam(required = false) ReservationStatus status,

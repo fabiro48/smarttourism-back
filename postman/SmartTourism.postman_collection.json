@@ -1,0 +1,470 @@
+{
+  "info": {
+    "_postman_id": "smarttourism-collection-v1",
+    "name": "Smart Tourism Santander API",
+    "description": "Colección completa de la API REST del backend de Turismo Inteligente Santander.\n\n**Flujo E2E recomendado:**\n1. Auth → Register (crea turista)\n2. Auth → Login Admin (obtiene adminToken)\n3. Auth → Login Tourist (obtiene touristToken)\n4. Experiences → Create Experience (guarda experienceId)\n5. Schedules → Create Schedule (guarda scheduleId)\n6. Reservations → Create Reservation (guarda reservationId)\n7. Payments → Simulate Payment\n8. Reviews → Create Review\n\n**Variables de entorno requeridas:** baseUrl, adminEmail, adminPassword",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-refresh jwtToken if absent",
+          "const token = pm.environment.get('jwtToken');",
+          "if (!token) {",
+          "  const loginReq = {",
+          "    url: pm.environment.get('baseUrl') + '/api/v1/auth/login',",
+          "    method: 'POST',",
+          "    header: { 'Content-Type': 'application/json' },",
+          "    body: { mode: 'raw', raw: JSON.stringify({",
+          "      email: pm.environment.get('adminEmail'),",
+          "      password: pm.environment.get('adminPassword')",
+          "    })}",
+          "  };",
+          "  pm.sendRequest(loginReq, (err, res) => {",
+          "    if (!err && res.code === 200) {",
+          "      pm.environment.set('jwtToken', res.json().token);",
+          "    }",
+          "  });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "description": "Registro y autenticación de usuarios",
+      "item": [
+        {
+          "name": "Register Tourist",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/auth/register", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","register"]},
+            "body": {"mode": "raw", "raw": "{\n  \"fullName\": \"Juan Turista\",\n  \"email\": \"turista@test.com\",\n  \"password\": \"Password123!\",\n  \"phone\": \"+57 300 1234567\",\n  \"documentNumber\": \"1234567890\"\n}"}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 201', () => pm.response.to.have.status(201));",
+            "pm.test('Has token', () => { const b = pm.response.json(); pm.expect(b.token).to.be.a('string'); });",
+            "pm.test('Has user', () => { const b = pm.response.json(); pm.expect(b.user).to.exist; });",
+            "if (pm.response.code === 201) { pm.environment.set('touristToken', pm.response.json().token); pm.environment.set('touristEmail', 'turista@test.com'); pm.environment.set('touristPassword', 'Password123!'); }"
+          ]}}]
+        },
+        {
+          "name": "Login Admin",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/auth/login", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","login"]},
+            "body": {"mode": "raw", "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}"}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Has token', () => pm.expect(pm.response.json().token).to.be.a('string'));",
+            "if (pm.response.code === 200) { pm.environment.set('adminToken', pm.response.json().token); pm.environment.set('jwtToken', pm.response.json().token); }"
+          ]}}]
+        },
+        {
+          "name": "Login Tourist",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/auth/login", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","login"]},
+            "body": {"mode": "raw", "raw": "{\n  \"email\": \"{{touristEmail}}\",\n  \"password\": \"{{touristPassword}}\"\n}"}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Has token', () => pm.expect(pm.response.json().token).to.be.a('string'));",
+            "if (pm.response.code === 200) { pm.environment.set('touristToken', pm.response.json().token); }"
+          ]}}]
+        },
+        {
+          "name": "[Error] Register - Email duplicado",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/auth/register", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","register"]},
+            "body": {"mode": "raw", "raw": "{\n  \"fullName\": \"Otro Usuario\",\n  \"email\": \"turista@test.com\",\n  \"password\": \"Password123!\",\n  \"phone\": \"+57 300 9999999\",\n  \"documentNumber\": \"9999999999\"\n}"}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 409 Conflict', () => pm.response.to.have.status(409));",
+            "pm.test('Error format valid', () => { const b = pm.response.json(); pm.expect(b.status).to.eql(409); pm.expect(b.message).to.be.a('string'); pm.expect(b.timestamp).to.exist; });"
+          ]}}]
+        },
+        {
+          "name": "[Error] Login - Contraseña incorrecta",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/auth/login", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","login"]},
+            "body": {"mode": "raw", "raw": "{\n  \"email\": \"admin@smarttourism.com\",\n  \"password\": \"WrongPassword!\"\n}"}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 401 Unauthorized', () => pm.response.to.have.status(401));",
+            "pm.test('Not 200', () => pm.expect(pm.response.code).to.not.eql(200));"
+          ]}}]
+        }
+      ]
+    },
+    {
+      "name": "Experiences",
+      "description": "Catálogo de experiencias turísticas",
+      "item": [
+        {
+          "name": "Get All Experiences",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/api/v1/experiences?page=0&size=10", "host": ["{{baseUrl}}"], "path": ["api","v1","experiences"], "query": [{"key":"page","value":"0"},{"key":"size","value":"10"}]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Is paginated', () => { const b = pm.response.json(); pm.expect(b.content).to.be.an('array'); pm.expect(b.totalElements).to.exist; });"
+          ]}}]
+        },
+        {
+          "name": "Get All Experiences - With Filters",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/api/v1/experiences?category=Aventura&difficulty=MODERATE&minPrice=50000&maxPrice=300000&available=true", "host": ["{{baseUrl}}"], "path": ["api","v1","experiences"], "query": [{"key":"category","value":"Aventura"},{"key":"difficulty","value":"MODERATE"},{"key":"minPrice","value":"50000"},{"key":"maxPrice","value":"300000"},{"key":"available","value":"true"}]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Results match filters', () => { const b = pm.response.json(); b.content.forEach(e => { pm.expect(e.category).to.eql('Aventura'); }); });"
+          ]}}]
+        },
+        {
+          "name": "Get Experience by ID",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/api/v1/experiences/{{experienceId}}", "host": ["{{baseUrl}}"], "path": ["api","v1","experiences","{{experienceId}}"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Has required fields', () => { const b = pm.response.json(); pm.expect(b.id).to.exist; pm.expect(b.title).to.be.a('string'); pm.expect(b.price).to.exist; });"
+          ]}}]
+        },
+        {
+          "name": "Create Experience (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{adminToken}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/experiences", "host": ["{{baseUrl}}"], "path": ["api","v1","experiences"]},
+            "body": {"mode": "raw", "raw": "{\n  \"title\": \"Senderismo Cañón del Chicamocha\",\n  \"description\": \"Experiencia de senderismo en el cañón más profundo de Colombia\",\n  \"category\": \"Aventura\",\n  \"location\": \"Cañón del Chicamocha, Santander\",\n  \"duration\": 240,\n  \"difficulty\": \"MODERATE\",\n  \"price\": 150000,\n  \"images\": [\"https://example.com/chicamocha.jpg\"]\n}"}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 201', () => pm.response.to.have.status(201));",
+            "pm.test('Has id', () => pm.expect(pm.response.json().id).to.be.a('string'));",
+            "if (pm.response.code === 201) { pm.environment.set('experienceId', pm.response.json().id); }"
+          ]}}]
+        },
+        {
+          "name": "Update Experience (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{adminToken}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/experiences/{{experienceId}}", "host": ["{{baseUrl}}"], "path": ["api","v1","experiences","{{experienceId}}"]},
+            "body": {"mode": "raw", "raw": "{\n  \"title\": \"Senderismo Cañón del Chicamocha (Actualizado)\",\n  \"description\": \"Descripción actualizada\",\n  \"category\": \"Aventura\",\n  \"location\": \"Cañón del Chicamocha, Santander\",\n  \"duration\": 300,\n  \"difficulty\": \"HARD\",\n  \"price\": 180000,\n  \"images\": [\"https://example.com/chicamocha2.jpg\"]\n}"}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Title updated', () => pm.expect(pm.response.json().title).to.include('Actualizado'));"
+          ]}}]
+        },
+        {
+          "name": "[Error] Create Experience - Sin autenticación",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/experiences", "host": ["{{baseUrl}}"], "path": ["api","v1","experiences"]},
+            "body": {"mode": "raw", "raw": "{\n  \"title\": \"Test\",\n  \"description\": \"Test\",\n  \"category\": \"Test\",\n  \"location\": \"Test\",\n  \"duration\": 60,\n  \"price\": 10000\n}"}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 401 Unauthorized', () => pm.response.to.have.status(401));"
+          ]}}]
+        }
+      ]
+    },
+    {
+      "name": "Schedules",
+      "description": "Horarios de experiencias (solo ADMIN)",
+      "item": [
+        {
+          "name": "Create Schedule (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{adminToken}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/experiences/{{experienceId}}/schedules", "host": ["{{baseUrl}}"], "path": ["api","v1","experiences","{{experienceId}}","schedules"]},
+            "body": {"mode": "raw", "raw": "{\n  \"dayOfWeek\": \"SATURDAY\",\n  \"startTime\": \"08:00:00\",\n  \"endTime\": \"12:00:00\",\n  \"availableSlots\": 20\n}"}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 201', () => pm.response.to.have.status(201));",
+            "pm.test('Has id', () => pm.expect(pm.response.json().id).to.be.a('string'));",
+            "if (pm.response.code === 201) { pm.environment.set('scheduleId', pm.response.json().id); }"
+          ]}}]
+        },
+        {
+          "name": "Update Schedule (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{adminToken}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/experiences/{{experienceId}}/schedules/{{scheduleId}}", "host": ["{{baseUrl}}"], "path": ["api","v1","experiences","{{experienceId}}","schedules","{{scheduleId}}"]},
+            "body": {"mode": "raw", "raw": "{\n  \"dayOfWeek\": \"SUNDAY\",\n  \"startTime\": \"09:00:00\",\n  \"endTime\": \"13:00:00\",\n  \"availableSlots\": 15\n}"}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));"
+          ]}}]
+        },
+        {
+          "name": "Delete Schedule (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{adminToken}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/experiences/{{experienceId}}/schedules/{{scheduleId}}", "host": ["{{baseUrl}}"], "path": ["api","v1","experiences","{{experienceId}}","schedules","{{scheduleId}}"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 204', () => pm.response.to.have.status(204));"
+          ]}}]
+        }
+      ]
+    },
+    {
+      "name": "Reservations",
+      "description": "Gestión de reservas de turistas",
+      "item": [
+        {
+          "name": "Create Reservation (Tourist)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{touristToken}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/reservations", "host": ["{{baseUrl}}"], "path": ["api","v1","reservations"]},
+            "body": {"mode": "raw", "raw": "{\n  \"experienceId\": \"{{experienceId}}\",\n  \"scheduleId\": \"{{scheduleId}}\",\n  \"reservationDate\": \"2025-12-15\",\n  \"quantity\": 2\n}"}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 201', () => pm.response.to.have.status(201));",
+            "pm.test('Status PENDING_PAYMENT', () => pm.expect(pm.response.json().status).to.eql('PENDING_PAYMENT'));",
+            "pm.test('Has totalAmount', () => pm.expect(pm.response.json().totalAmount).to.exist);",
+            "pm.test('Has expirationDate', () => pm.expect(pm.response.json().expirationDate).to.exist);",
+            "if (pm.response.code === 201) { pm.environment.set('reservationId', pm.response.json().id); }"
+          ]}}]
+        },
+        {
+          "name": "Get My Reservations (Tourist)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{touristToken}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/reservations/me", "host": ["{{baseUrl}}"], "path": ["api","v1","reservations","me"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Is array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+          ]}}]
+        },
+        {
+          "name": "Cancel Reservation (Tourist)",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Authorization", "value": "Bearer {{touristToken}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/reservations/{{reservationId}}/cancel", "host": ["{{baseUrl}}"], "path": ["api","v1","reservations","{{reservationId}}","cancel"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 204', () => pm.response.to.have.status(204));"
+          ]}}]
+        },
+        {
+          "name": "[Error] Create Reservation - Sin autenticación",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/reservations", "host": ["{{baseUrl}}"], "path": ["api","v1","reservations"]},
+            "body": {"mode": "raw", "raw": "{}"}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 401', () => pm.response.to.have.status(401));"
+          ]}}]
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "description": "Simulación de pagos de reservas",
+      "item": [
+        {
+          "name": "Simulate Payment (Tourist)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{touristToken}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/payments/simulate", "host": ["{{baseUrl}}"], "path": ["api","v1","payments","simulate"]},
+            "body": {"mode": "raw", "raw": "{\n  \"reservationId\": \"{{reservationId}}\"\n}"}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Has paymentStatus', () => pm.expect(pm.response.json().paymentStatus).to.be.oneOf(['APPROVED','REJECTED']));",
+            "pm.test('Has transactionReference', () => pm.expect(pm.response.json().transactionReference).to.be.a('string'));"
+          ]}}]
+        },
+        {
+          "name": "[Error] Payment - Sin autenticación",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/payments/simulate", "host": ["{{baseUrl}}"], "path": ["api","v1","payments","simulate"]},
+            "body": {"mode": "raw", "raw": "{\n  \"reservationId\": \"{{reservationId}}\"\n}"}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 401', () => pm.response.to.have.status(401));"
+          ]}}]
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "description": "Calificaciones y reseñas de experiencias",
+      "item": [
+        {
+          "name": "Create Review (Tourist)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{touristToken}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/reviews", "host": ["{{baseUrl}}"], "path": ["api","v1","reviews"]},
+            "body": {"mode": "raw", "raw": "{\n  \"experienceId\": \"{{experienceId}}\",\n  \"rating\": 5,\n  \"comment\": \"Experiencia increíble, totalmente recomendada!\"\n}"}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 201 or 403', () => pm.expect(pm.response.code).to.be.oneOf([201, 403, 409]));",
+            "if (pm.response.code === 201) { pm.test('Has rating', () => pm.expect(pm.response.json().rating).to.eql(5)); }"
+          ]}}]
+        },
+        {
+          "name": "Get Reviews by Experience",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/api/v1/experiences/{{experienceId}}/reviews", "host": ["{{baseUrl}}"], "path": ["api","v1","experiences","{{experienceId}}","reviews"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Is array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+          ]}}]
+        },
+        {
+          "name": "[Error] Create Review - Rating inválido",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{touristToken}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/reviews", "host": ["{{baseUrl}}"], "path": ["api","v1","reviews"]},
+            "body": {"mode": "raw", "raw": "{\n  \"experienceId\": \"{{experienceId}}\",\n  \"rating\": 10,\n  \"comment\": \"Rating inválido\"\n}"}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ]}}]
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "description": "Endpoints de administración (solo ADMIN)",
+      "item": [
+        {
+          "name": "Get All Users (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{adminToken}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/admin/users?page=0&size=20", "host": ["{{baseUrl}}"], "path": ["api","v1","admin","users"], "query": [{"key":"page","value":"0"},{"key":"size","value":"20"}]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Is paginated', () => pm.expect(pm.response.json().content).to.be.an('array'));",
+            "if (pm.response.code === 200 && pm.response.json().content.length > 0) { pm.environment.set('userId', pm.response.json().content[0].id); }"
+          ]}}]
+        },
+        {
+          "name": "Update User Status (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{adminToken}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/admin/users/{{userId}}/status", "host": ["{{baseUrl}}"], "path": ["api","v1","admin","users","{{userId}}","status"]},
+            "body": {"mode": "raw", "raw": "{\n  \"active\": true\n}"}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Active field present', () => pm.expect(pm.response.json().active).to.exist);"
+          ]}}]
+        },
+        {
+          "name": "Get All Reservations (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{adminToken}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/admin/reservations?page=0&size=20", "host": ["{{baseUrl}}"], "path": ["api","v1","admin","reservations"], "query": [{"key":"page","value":"0"},{"key":"size","value":"20"}]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Is paginated', () => pm.expect(pm.response.json().content).to.be.an('array'));"
+          ]}}]
+        },
+        {
+          "name": "Get Reservations - Filter by Status (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{adminToken}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/admin/reservations?status=PENDING_PAYMENT&page=0&size=10", "host": ["{{baseUrl}}"], "path": ["api","v1","admin","reservations"], "query": [{"key":"status","value":"PENDING_PAYMENT"},{"key":"page","value":"0"},{"key":"size","value":"10"}]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));"
+          ]}}]
+        },
+        {
+          "name": "[Error] Admin endpoint - Rol TOURIST",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{touristToken}}"}],
+            "url": {"raw": "{{baseUrl}}/api/v1/admin/users", "host": ["{{baseUrl}}"], "path": ["api","v1","admin","users"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 403 Forbidden', () => pm.response.to.have.status(403));"
+          ]}}]
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "description": "Health check del sistema",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/actuator/health", "host": ["{{baseUrl}}"], "path": ["actuator","health"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Has status field', () => pm.expect(pm.response.json().status).to.be.a('string'));",
+            "pm.test('No auth required', () => pm.expect(pm.response.code).to.not.eql(401));"
+          ]}}]
+        },
+        {
+          "name": "Swagger UI",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/swagger-ui.html", "host": ["{{baseUrl}}"], "path": ["swagger-ui.html"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Swagger UI accessible', () => pm.expect(pm.response.code).to.be.oneOf([200, 302]));"
+          ]}}]
+        },
+        {
+          "name": "OpenAPI Spec",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/v3/api-docs", "host": ["{{baseUrl}}"], "path": ["v3","api-docs"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Is valid OpenAPI spec', () => { const b = pm.response.json(); pm.expect(b.openapi).to.be.a('string'); pm.expect(b.info.title).to.eql('Smart Tourism Santander API'); pm.expect(b.paths).to.exist; });"
+          ]}}]
+        }
+      ]
+    }
+  ]
+}

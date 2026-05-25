@@ -5,6 +5,8 @@ import com.smarttourism.backend.admin.dto.UserResponse;
 import com.smarttourism.backend.admin.mapper.UserMapper;
 import com.smarttourism.backend.admin.service.AdminUserService;
 import com.smarttourism.backend.users.entity.User;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,6 +26,7 @@ import java.util.UUID;
  *
  * <p>Validates: Requirements 9.7, 9.8
  */
+@Tag(name = "admin", description = "Administración de usuarios (solo ADMIN)")
 @RestController
 @RequestMapping("/api/v1/admin/users")
 @RequiredArgsConstructor
@@ -39,6 +42,7 @@ public class AdminUserController {
      * @param pageable pagination parameters (default: page 0, size 20, sort by createdAt desc)
      * @return page of users
      */
+    @Operation(summary = "Listar todos los usuarios paginados")
     @GetMapping
     public ResponseEntity<Page<UserResponse>> getAllUsers(
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
@@ -57,6 +61,7 @@ public class AdminUserController {
      * @param request the status update request
      * @return the updated user
      */
+    @Operation(summary = "Actualizar estado activo/inactivo de un usuario")
     @PatchMapping("/{userId}/status")
     public ResponseEntity<UserResponse> updateUserStatus(
             @PathVariable UUID userId,

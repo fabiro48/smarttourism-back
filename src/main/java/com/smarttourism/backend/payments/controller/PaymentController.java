@@ -4,6 +4,8 @@ import com.smarttourism.backend.payments.dto.PaymentRequest;
 import com.smarttourism.backend.payments.dto.PaymentResponse;
 import com.smarttourism.backend.payments.service.PaymentService;
 import com.smarttourism.backend.users.entity.User;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,7 @@ import java.util.UUID;
  *
  * <p>Validates: Requirements 7.1
  */
+@Tag(name = "payments", description = "Simulación de pagos de reservas")
 @RestController
 @RequestMapping("/api/v1/payments")
 @RequiredArgsConstructor
@@ -49,6 +52,7 @@ public class PaymentController {
      * @return HTTP 200 with the {@link PaymentResponse} containing payment details
      *         and updated reservation information
      */
+    @Operation(summary = "Simular el pago de una reserva pendiente")
     @PostMapping("/simulate")
     public ResponseEntity<PaymentResponse> simulatePayment(
             @Valid @RequestBody PaymentRequest request,

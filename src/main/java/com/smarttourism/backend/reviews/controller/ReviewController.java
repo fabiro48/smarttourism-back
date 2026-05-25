@@ -4,6 +4,8 @@ import com.smarttourism.backend.reviews.dto.ReviewRequest;
 import com.smarttourism.backend.reviews.dto.ReviewResponse;
 import com.smarttourism.backend.reviews.service.ReviewService;
 import com.smarttourism.backend.users.entity.User;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,7 @@ import java.util.UUID;
  *
  * <p>Requirements: 8.1, 8.5
  */
+@Tag(name = "reviews", description = "Calificaciones y reseñas de experiencias")
 @RestController
 @RequestMapping("/api/v1/reviews")
 @RequiredArgsConstructor
@@ -52,6 +55,7 @@ public class ReviewController {
      * @throws jakarta.validation.ConstraintViolationException (HTTP 400) if rating
      *         is outside [1, 5] or required fields are missing
      */
+    @Operation(summary = "Crear una reseña para una experiencia reservada")
     @PostMapping
     @PreAuthorize("hasRole('TOURIST')")
     public ResponseEntity<ReviewResponse> createReview(
@@ -74,6 +78,7 @@ public class ReviewController {
      * @throws com.smarttourism.backend.common.exception.ResourceNotFoundException
      *         (HTTP 404) if the experience does not exist
      */
+    @Operation(summary = "Obtener reseñas de una experiencia")
     @GetMapping("/experiences/{experienceId}/reviews")
     public ResponseEntity<List<ReviewResponse>> getReviewsByExperience(
             @PathVariable UUID experienceId) {

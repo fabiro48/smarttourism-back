@@ -4,6 +4,8 @@ import com.smarttourism.backend.auth.dto.AuthResponse;
 import com.smarttourism.backend.auth.dto.LoginRequest;
 import com.smarttourism.backend.auth.dto.RegisterRequest;
 import com.smarttourism.backend.auth.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * <p>Validates: Requirements 1.1, 1.4, 2.1
  */
+@Tag(name = "auth", description = "Registro y autenticación de usuarios")
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -39,6 +42,7 @@ public class AuthController {
      * @param request the registration payload; validated with {@code @Valid}
      * @return HTTP 201 with the {@link AuthResponse} (JWT + user info)
      */
+    @Operation(summary = "Registrar un nuevo usuario turista")
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
         AuthResponse response = authService.register(request);
@@ -55,6 +59,7 @@ public class AuthController {
      * @param request the login payload; validated with {@code @Valid}
      * @return HTTP 200 with the {@link AuthResponse} (JWT + user info)
      */
+    @Operation(summary = "Autenticar usuario y obtener JWT")
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);

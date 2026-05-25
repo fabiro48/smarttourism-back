@@ -3,6 +3,8 @@ package com.smarttourism.backend.schedules.controller;
 import com.smarttourism.backend.schedules.dto.ScheduleRequest;
 import com.smarttourism.backend.schedules.dto.ScheduleResponse;
 import com.smarttourism.backend.schedules.service.ScheduleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,6 +30,7 @@ import java.util.UUID;
  *
  * <p>Validates: Requirements 9.4, 9.5
  */
+@Tag(name = "schedules", description = "Horarios de experiencias turísticas (solo ADMIN)")
 @RestController
 @RequestMapping("/api/v1/experiences/{experienceId}/schedules")
 @RequiredArgsConstructor
@@ -44,6 +47,7 @@ public class ScheduleController {
      * @return HTTP 201 with the persisted {@link ScheduleResponse} DTO,
      *         or HTTP 404 if the experience does not exist or is inactive
      */
+    @Operation(summary = "Crear horario para una experiencia")
     @PostMapping
     public ResponseEntity<ScheduleResponse> createSchedule(
             @PathVariable UUID experienceId,
@@ -62,6 +66,7 @@ public class ScheduleController {
      * @return HTTP 200 with the updated {@link ScheduleResponse} DTO,
      *         or HTTP 404 if the schedule does not exist
      */
+    @Operation(summary = "Actualizar un horario existente")
     @PutMapping("/{scheduleId}")
     public ResponseEntity<ScheduleResponse> updateSchedule(
             @PathVariable UUID experienceId,
@@ -81,6 +86,7 @@ public class ScheduleController {
      * @return HTTP 204 No Content on success,
      *         or HTTP 404 if the schedule does not exist
      */
+    @Operation(summary = "Desactivar un horario (borrado lógico)")
     @DeleteMapping("/{scheduleId}")
     public ResponseEntity<Void> deactivateSchedule(
             @PathVariable UUID experienceId,

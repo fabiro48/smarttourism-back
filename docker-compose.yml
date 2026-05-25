@@ -1,0 +1,95 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Smart Tourism Santander — docker-compose para desarrollo local
+#
+# Levanta tres servicios:
+#   - db       : PostgreSQL 16 (base de datos principal)
+#   - mailhog  : Servidor SMTP de prueba (captura correos sin enviarlos)
+#   - backend  : Spring Boot app (construida desde el Dockerfile local)
+#
+# Uso:
+#   docker compose up --build        # Primera vez o tras cambios en el código
+#   docker compose up                # Reuso de imagen existente
+#   docker compose down              # Detener y eliminar contenedores
+#   docker compose down -v           # Detener y eliminar volúmenes (borra datos)
+#
+# Swagger UI disponible en: http://localhost:8080/swagger-ui.html
+# MailHog UI disponible en: http://localhost:8025
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── PostgreSQL 16 ────────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: smarttourism-db
+    environment:
+      POSTGRES_DB: smarttourism
+      POSTGRES_USER: smarttourism
+      POSTGRES_PASSWORD: smarttourism123
+    ports:
+      - "5432:5432"
+    volumes:
+      # Volumen nombrado para persistir datos entre reinicios
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      # Verifica que PostgreSQL está listo para aceptar conexiones
+      test: ["CMD-SHELL", "pg_isready -U smarttourism -d smarttourism"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  # ── MailHog (SMTP de prueba) ──────────────────────────────────────────────────
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: smarttourism-mailhog
+    ports:
+      - "1025:1025"   # Puerto SMTP — el backend envía correos aquí
+      - "8025:8025"   # Puerto web — interfaz para inspeccionar correos capturados
+    restart: unless-stopped
+
+  # ── Spring Boot Backend ───────────────────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smarttourism-backend
+    ports:
+      - "8080:8080"   # API REST y Swagger UI
+    environment:
+      # ── Base de datos ──────────────────────────────────────────────────────
+      DB_URL: jdbc:postgresql://db:5432/smarttourism
+      DB_USERNAME: smarttourism
+      DB_PASSWORD: smarttourism123
+
+      # ── JWT ────────────────────────────────────────────────────────────────
+      # IMPORTANTE: Cambiar este secreto en producción (mínimo 256 bits)
+      JWT_SECRET: c21hcnR0b3VyaXNtLXNlY3JldC1rZXktZm9yLWxvY2FsLWRldi1vbmx5LW11c3QtYmUtYXQtbGVhc3QtMjU2LWJpdHM=
+      JWT_EXPIRATION_MS: 86400000   # 24 horas en milisegundos
+
+      # ── Correo (MailHog) ───────────────────────────────────────────────────
+      MAIL_HOST: mailhog           # Nombre del servicio en la red Docker
+      MAIL_PORT: 1025
+      MAIL_USERNAME: noreply@smarttourism.com
+      MAIL_PASSWORD: ""            # MailHog no requiere contraseña
+
+      # ── CORS ───────────────────────────────────────────────────────────────
+      CORS_ALLOWED_ORIGINS: http://localhost:3000,http://localhost:5173
+
+      # ── Swagger UI ─────────────────────────────────────────────────────────
+      SPRINGDOC_SWAGGER_UI_ENABLED: "true"
+    depends_on:
+      db:
+        condition: service_healthy   # Espera a que PostgreSQL esté listo
+      mailhog:
+        condition: service_started   # MailHog no tiene healthcheck oficial
+    restart: on-failure
+    # Tiempo de espera adicional para que Flyway ejecute las migraciones
+    # antes de que el healthcheck del backend falle
+
+# ── Volúmenes ─────────────────────────────────────────────────────────────────
+volumes:
+  postgres_data:
+    # Volumen nombrado gestionado por Docker — persiste entre `docker compose down`
+    # Para borrar los datos: docker compose down -v

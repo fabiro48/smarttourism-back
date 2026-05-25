@@ -5,6 +5,8 @@ import com.smarttourism.backend.experiences.dto.ExperienceFilterParams;
 import com.smarttourism.backend.experiences.dto.ExperienceRequest;
 import com.smarttourism.backend.experiences.dto.ExperienceResponse;
 import com.smarttourism.backend.experiences.service.ExperienceService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,6 +38,7 @@ import java.util.UUID;
  *
  * <p>Validates: Requirements 3.1, 3.2, 3.3, 9.1, 9.2, 9.3, 9.4
  */
+@Tag(name = "experiences", description = "Catálogo de experiencias turísticas")
 @RestController
 @RequestMapping("/api/v1/experiences")
 @RequiredArgsConstructor
@@ -60,6 +63,7 @@ public class ExperienceController {
      * @param pageable   pagination and sorting (default: page 0, size 20)
      * @return HTTP 200 with a page of {@link ExperienceResponse} DTOs
      */
+    @Operation(summary = "Listar experiencias activas con filtros opcionales")
     @GetMapping
     public ResponseEntity<Page<ExperienceResponse>> getExperiences(
             @RequestParam(required = false) String category,
@@ -91,6 +95,7 @@ public class ExperienceController {
      * @return HTTP 200 with the {@link ExperienceResponse} DTO,
      *         or HTTP 404 if the experience does not exist or is inactive
      */
+    @Operation(summary = "Obtener detalle de una experiencia por ID")
     @GetMapping("/{id}")
     public ResponseEntity<ExperienceResponse> getExperienceById(@PathVariable UUID id) {
         ExperienceResponse response = experienceService.getExperienceById(id);
@@ -107,6 +112,7 @@ public class ExperienceController {
      * @param request the creation payload; validated with {@code @Valid}
      * @return HTTP 201 with the persisted {@link ExperienceResponse} DTO
      */
+    @Operation(summary = "Crear una nueva experiencia (solo ADMIN)")
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ExperienceResponse> createExperience(
@@ -126,6 +132,7 @@ public class ExperienceController {
      * @return HTTP 200 with the updated {@link ExperienceResponse} DTO,
      *         or HTTP 404 if the experience does not exist
      */
+    @Operation(summary = "Actualizar una experiencia existente (solo ADMIN)")
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ExperienceResponse> updateExperience(
@@ -146,6 +153,7 @@ public class ExperienceController {
      * @return HTTP 204 No Content on success,
      *         or HTTP 404 if the experience does not exist
      */
+    @Operation(summary = "Desactivar una experiencia (borrado lógico, solo ADMIN)")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteExperience(@PathVariable UUID id) {

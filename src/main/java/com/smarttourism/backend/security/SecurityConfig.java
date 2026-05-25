@@ -62,6 +62,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,  "/api/v1/reviews/**").permitAll()
                         .requestMatchers(HttpMethod.GET,  "/actuator/health").permitAll()
 
+                        // ── Swagger UI / OpenAPI spec (public) ────────────────
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs"
+                        ).permitAll()
+
                         // ── TOURIST endpoints ─────────────────────────────────
                         .requestMatchers(HttpMethod.POST,  "/api/v1/reservations").hasRole("TOURIST")
                         .requestMatchers(HttpMethod.GET,   "/api/v1/reservations/me").hasRole("TOURIST")

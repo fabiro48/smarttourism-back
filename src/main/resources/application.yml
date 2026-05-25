@@ -83,3 +83,14 @@ logging:
     com.smarttourism.backend: INFO
     org.springframework.security: WARN
     org.hibernate.SQL: WARN
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: ${SPRINGDOC_SWAGGER_UI_ENABLED:true}
+    try-it-out-enabled: true
+    operations-sorter: alpha
+    tags-sorter: alpha
+  show-actuator: true
