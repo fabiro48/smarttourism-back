@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: ${TEST_DB_URL:jdbc:tc:postgresql:16:///smarttourism_test}
-    username: ${TEST_DB_USERNAME:test}
-    password: ${TEST_DB_PASSWORD:test}
-    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: ${TEST_DB_URL:jdbc:postgresql://localhost:5432/smarttourism}
+    username: ${TEST_DB_USERNAME:smarttourism}
+    password: ${TEST_DB_PASSWORD:smarttourism123}
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
@@ -46,6 +46,9 @@ management:
   endpoint:
     health:
       show-details: always
+  health:
+    mail:
+      enabled: false
 
 logging:
   level:

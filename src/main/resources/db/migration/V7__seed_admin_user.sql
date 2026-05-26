@@ -6,7 +6,7 @@ VALUES (
     gen_random_uuid(),
     'Administrador del Sistema',
     'admin@smarttourism.com',
-    '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
+    '$2b$10$rjlnEOVgVzQ5WuvVYP.o0uO163KvA1dip7ZoUAPF4PTOoojBOtmvi',
     '+57 300 1234567',
     'ADMIN-001',
     'ADMIN',

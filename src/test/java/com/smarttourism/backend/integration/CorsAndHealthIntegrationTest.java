@@ -69,9 +69,9 @@ class CorsAndHealthIntegrationTest {
     @Test
     void adminEndpoints_withoutToken_return401() throws Exception {
         mockMvc.perform(get("/api/v1/admin/users"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
 
         mockMvc.perform(get("/api/v1/admin/reservations"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 }
