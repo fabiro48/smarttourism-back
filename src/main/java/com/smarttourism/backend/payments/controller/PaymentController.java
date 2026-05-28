@@ -8,15 +8,16 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -61,6 +62,26 @@ public class PaymentController {
         UUID touristId = extractUserIdFromAuthentication(authentication);
         PaymentResponse response = paymentService.simulatePayment(request.getReservationId(), touristId);
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Returns the payment history for the authenticated tourist.
+     *
+     * <p>Retrieves all payments associated with reservations belonging to the
+     * authenticated tourist, ordered by creation date descending (most recent first).
+     *
+     * <p>Validates: Requirements 1.1, 1.2, 1.3, 2.3
+     *
+     * @param authentication the Spring Security authentication object containing
+     *                       the authenticated user's principal
+     * @return HTTP 200 with a list of {@link PaymentResponse} (empty list if no payments)
+     */
+    @Operation(summary = "Obtener historial de pagos del turista autenticado")
+    @GetMapping("/me")
+    public ResponseEntity<List<PaymentResponse>> getMyPayments(Authentication authentication) {
+        UUID touristId = extractUserIdFromAuthentication(authentication);
+        List<PaymentResponse> payments = paymentService.getPaymentsByTourist(touristId);
+        return ResponseEntity.ok(payments);
     }
 
     /**

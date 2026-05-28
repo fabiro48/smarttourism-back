@@ -75,4 +75,12 @@ public class ExperienceResponse {
 
     /** Active schedules associated with this experience. */
     private List<ScheduleResponse> schedules;
+
+    // ── Geolocation fields ───────────────────────────────────────────────────
+
+    /** Latitude of the experience location. */
+    private Double latitude;
+
+    /** Longitude of the experience location. */
+    private Double longitude;
 }

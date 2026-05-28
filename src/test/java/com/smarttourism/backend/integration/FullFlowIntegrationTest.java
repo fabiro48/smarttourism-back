@@ -101,6 +101,8 @@ class FullFlowIntegrationTest {
         experienceRequest.setDifficulty(Difficulty.MODERATE);
         experienceRequest.setPrice(new BigDecimal("150000"));
         experienceRequest.setImages(List.of("https://example.com/chicamocha.jpg"));
+        experienceRequest.setLatitude(6.8478);
+        experienceRequest.setLongitude(-73.1198);
 
         MvcResult createExpResult = mockMvc.perform(post("/api/v1/experiences")
                         .header("Authorization", "Bearer " + adminToken)

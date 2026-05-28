@@ -2,6 +2,8 @@ package com.smarttourism.backend.experiences.entity;
 
 import com.smarttourism.backend.common.enums.Difficulty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -45,6 +47,16 @@ public class Experience {
 
     @Column(columnDefinition = "text[]")
     private String[] images;
+
+    @Column(nullable = false)
+    @Min(-90)
+    @Max(90)
+    private Double latitude;
+
+    @Column(nullable = false)
+    @Min(-180)
+    @Max(180)
+    private Double longitude;
 
     @Column(nullable = false)
     @Builder.Default

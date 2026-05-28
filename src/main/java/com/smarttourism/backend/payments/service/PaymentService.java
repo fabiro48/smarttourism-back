@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -131,5 +132,25 @@ public class PaymentService {
                 reservationMapper.toResponse(reservation)
         );
         return response;
+    }
+
+    /**
+     * Retrieves all payments for a given tourist, ordered by creation date descending.
+     *
+     * <p>Uses a JOIN FETCH query to eagerly load reservation, tourist, and experience
+     * associations, avoiding N+1 queries. Each Payment entity is mapped to a
+     * PaymentResponse DTO using the PaymentMapper.
+     *
+     * <p>Validates: Requirements 3.1, 3.3, 5.1
+     *
+     * @param touristId the UUID of the tourist whose payments to retrieve
+     * @return list of PaymentResponse DTOs ordered by createdAt descending
+     */
+    @Transactional(readOnly = true)
+    public List<PaymentResponse> getPaymentsByTourist(UUID touristId) {
+        List<Payment> payments = paymentRepository.findByTouristIdWithDetails(touristId);
+        return payments.stream()
+                .map(paymentMapper::toResponse)
+                .toList();
     }
 }
