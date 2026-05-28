@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -31,6 +32,27 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final ExperienceRepository experienceRepository;
     private final ScheduleMapper scheduleMapper;
+
+    // ── Queries ──────────────────────────────────────────────────────────────
+
+    /**
+     * Returns all active schedules for the given experience.
+     *
+     * @param experienceId the UUID of the parent experience
+     * @return list of {@link ScheduleResponse} DTOs, may be empty
+     * @throws ResourceNotFoundException if no active experience exists with the given id
+     */
+    public List<ScheduleResponse> getSchedulesByExperience(UUID experienceId) {
+        experienceRepository.findById(experienceId)
+                .filter(exp -> Boolean.TRUE.equals(exp.getActive()))
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Experiencia no encontrada con id: " + experienceId));
+
+        return scheduleRepository.findByExperienceIdAndActiveTrue(experienceId)
+                .stream()
+                .map(scheduleMapper::toResponse)
+                .toList();
+    }
 
     // ── Commands ──────────────────────────────────────────────────────────────
 

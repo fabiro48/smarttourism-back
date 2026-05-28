@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -38,6 +40,22 @@ import java.util.UUID;
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
+
+    /**
+     * Lists all active schedules for the given experience.
+     *
+     * @param experienceId the UUID of the parent experience
+     * @return HTTP 200 with the list of {@link ScheduleResponse} DTOs,
+     *         or HTTP 404 if the experience does not exist or is inactive
+     */
+    @Operation(summary = "Listar horarios activos de una experiencia")
+    @GetMapping
+    public ResponseEntity<List<ScheduleResponse>> getSchedules(
+            @PathVariable UUID experienceId) {
+
+        List<ScheduleResponse> schedules = scheduleService.getSchedulesByExperience(experienceId);
+        return ResponseEntity.ok(schedules);
+    }
 
     /**
      * Creates a new schedule for the given experience.
