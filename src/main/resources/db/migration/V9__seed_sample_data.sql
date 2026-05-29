@@ -7,11 +7,11 @@
 -- ═══════════════════════════════════════════════════════════════════════════════
 
 INSERT INTO users (id, full_name, email, password, phone, document_number, role, active, created_at, updated_at) VALUES
-('a1b2c3d4-1111-4000-8000-000000000001', 'Carlos Andrés Martínez', 'carlos.martinez@email.com', '$2b$10$rjlnEOVgVzQ5WuvVYP.o0uO163KvA1dip7ZoUAPF4PTOoojBOtmvi', '+57 315 2345678', '1098765432', 'TOURIST', TRUE, NOW() - INTERVAL '30 days', NOW() - INTERVAL '30 days'),
-('a1b2c3d4-2222-4000-8000-000000000002', 'María Fernanda López', 'maria.lopez@email.com', '$2b$10$rjlnEOVgVzQ5WuvVYP.o0uO163KvA1dip7ZoUAPF4PTOoojBOtmvi', '+57 320 3456789', '1087654321', 'TOURIST', TRUE, NOW() - INTERVAL '25 days', NOW() - INTERVAL '25 days'),
-('a1b2c3d4-3333-4000-8000-000000000003', 'Juan Pablo Rodríguez', 'juan.rodriguez@email.com', '$2b$10$rjlnEOVgVzQ5WuvVYP.o0uO163KvA1dip7ZoUAPF4PTOoojBOtmvi', '+57 310 4567890', '1076543210', 'TOURIST', TRUE, NOW() - INTERVAL '20 days', NOW() - INTERVAL '20 days'),
-('a1b2c3d4-4444-4000-8000-000000000004', 'Laura Valentina Gómez', 'laura.gomez@email.com', '$2b$10$rjlnEOVgVzQ5WuvVYP.o0uO163KvA1dip7ZoUAPF4PTOoojBOtmvi', '+57 318 5678901', '1065432109', 'TOURIST', TRUE, NOW() - INTERVAL '15 days', NOW() - INTERVAL '15 days'),
-('a1b2c3d4-5555-4000-8000-000000000005', 'Andrés Felipe Díaz', 'andres.diaz@email.com', '$2b$10$rjlnEOVgVzQ5WuvVYP.o0uO163KvA1dip7ZoUAPF4PTOoojBOtmvi', '+57 322 6789012', '1054321098', 'TOURIST', TRUE, NOW() - INTERVAL '10 days', NOW() - INTERVAL '10 days');
+('a1b2c3d4-1111-4000-8000-000000000001', 'Carlos Andrés Martínez', 'carlos.martinez@email.com', '$2b$10$uY7sFRuShe4tkzA8mtjLJuyUZKap/lvS9oJm3rUcDeec7jdImFynW', '+57 315 2345678', '1098765432', 'TOURIST', TRUE, NOW() - INTERVAL '30 days', NOW() - INTERVAL '30 days'),
+('a1b2c3d4-2222-4000-8000-000000000002', 'María Fernanda López', 'maria.lopez@email.com', '$2b$10$uY7sFRuShe4tkzA8mtjLJuyUZKap/lvS9oJm3rUcDeec7jdImFynW', '+57 320 3456789', '1087654321', 'TOURIST', TRUE, NOW() - INTERVAL '25 days', NOW() - INTERVAL '25 days'),
+('a1b2c3d4-3333-4000-8000-000000000003', 'Juan Pablo Rodríguez', 'juan.rodriguez@email.com', '$2b$10$uY7sFRuShe4tkzA8mtjLJuyUZKap/lvS9oJm3rUcDeec7jdImFynW', '+57 310 4567890', '1076543210', 'TOURIST', TRUE, NOW() - INTERVAL '20 days', NOW() - INTERVAL '20 days'),
+('a1b2c3d4-4444-4000-8000-000000000004', 'Laura Valentina Gómez', 'laura.gomez@email.com', '$2b$10$uY7sFRuShe4tkzA8mtjLJuyUZKap/lvS9oJm3rUcDeec7jdImFynW', '+57 318 5678901', '1065432109', 'TOURIST', TRUE, NOW() - INTERVAL '15 days', NOW() - INTERVAL '15 days'),
+('a1b2c3d4-5555-4000-8000-000000000005', 'Andrés Felipe Díaz', 'andres.diaz@email.com', '$2b$10$uY7sFRuShe4tkzA8mtjLJuyUZKap/lvS9oJm3rUcDeec7jdImFynW', '+57 322 6789012', '1054321098', 'TOURIST', TRUE, NOW() - INTERVAL '10 days', NOW() - INTERVAL '10 days');
 
 
 -- ═══════════════════════════════════════════════════════════════════════════════
